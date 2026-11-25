@@ -9,6 +9,8 @@ export interface PlayerPanelOptions {
   /** 人がクリックで操作できるか（AI 用パネルは false） */
   interactive: boolean;
   onEnd?: (result: GameResult) => void;
+  /** 人が盤面をクリックした結果（効果音などに使う。AI の手では呼ばれない） */
+  onHumanClick?: (outcome: ClickOutcome) => void;
 }
 
 /**
@@ -60,7 +62,9 @@ export class PlayerPanel {
 
     const snap = this.game.snapshot();
     this.view = new BoardView(q('.board'), snap.rows, snap.cols, (pos) => {
-      if (options.interactive) this.click(pos);
+      if (!options.interactive) return;
+      const outcome = this.click(pos);
+      options.onHumanClick?.(outcome);
     });
     this.view.setDisabled(!options.interactive);
     this.view.render(snap);

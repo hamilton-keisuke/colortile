@@ -3,7 +3,9 @@ import { AIController } from './ai/AIController';
 import { AIPlayer, GreedyAI, RandomAI } from './ai/AIPlayer';
 import { BoardGenerator, seededRandom } from './core/BoardGenerator';
 import { judgeMatch } from './core/match';
+import { ClickOutcome } from './core/Game';
 import { PlayerPanel } from './ui/PlayerPanel';
+import { SoundPlayer } from './ui/SoundPlayer';
 
 type Mode = 'solo' | 'versus';
 
@@ -32,6 +34,14 @@ let panels: PlayerPanel[] = [];
 let aiController: AIController | null = null;
 let countdownTimer: number | null = null;
 const countdownEl = $('countdown');
+const sound = new SoundPlayer();
+
+/** 自分のクリック結果に応じた効果音（持ち時間が減るミスだけ failure） */
+function playClickSound(outcome: ClickOutcome): void {
+  if (outcome.kind === 'penalty') sound.play('failure');
+  else if (outcome.kind === 'removed') sound.play('success');
+  // 'ignored'（タイルのあるマス・開始前・終了後）は何も起こらないので鳴らさない
+}
 
 function clearMatch(): void {
   stopCountdown();
@@ -45,7 +55,14 @@ function clearMatch(): void {
 function startSolo(): void {
   clearMatch();
   const cells = new BoardGenerator().generate();
-  panels = [new PlayerPanel(panelsEl, { title: 'あなた', cells, interactive: true })];
+  panels = [
+    new PlayerPanel(panelsEl, {
+      title: 'あなた',
+      cells,
+      interactive: true,
+      onHumanClick: playClickSound,
+    }),
+  ];
   panels[0].start();
 }
 
@@ -65,6 +82,7 @@ function startVersus(): void {
     cells: makeCells(),
     interactive: true,
     onEnd,
+    onHumanClick: playClickSound,
   });
   const cpu = new PlayerPanel(panelsEl, {
     title: `${ai.name}（${difficulty.label}）`,
@@ -146,6 +164,10 @@ for (const [key, d] of Object.entries(DIFFICULTIES)) {
 modeButtons.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode as Mode)));
 startBtn.addEventListener('click', start);
 difficultyEl.addEventListener('change', start);
+// ボタン（モード切替・新しいゲームなど）のクリック音
+document.addEventListener('click', (e) => {
+  if ((e.target as HTMLElement).closest('button')) sound.play('success');
+});
 
 setMode('versus');
 loop();
