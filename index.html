@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>カラータイル</title>
+  </head>
+  <body>
+    <main>
+      <nav class="topbar">
+        <h1>カラータイル</h1>
+        <div class="tabs">
+          <button data-mode="solo">ひとりで</button>
+          <button data-mode="versus">AIと対戦</button>
+        </div>
+        <label id="difficulty-wrap">AIの強さ <select id="difficulty"></select></label>
+        <button id="start">新しいゲーム</button>
+      </nav>
+      <div id="banner" class="banner" hidden></div>
+      <div id="panels"></div>
+      <div id="countdown" class="countdown" hidden></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
