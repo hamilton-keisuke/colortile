@@ -48,7 +48,9 @@ export class BoardView {
         const color = board.cells[r][c];
         const el = this.cellEls[r][c];
         el.classList.toggle('tile', color !== null);
-        el.style.background = color ? COLOR_HEX[color] : '';
+        // 色だけを CSS 変数で渡し、グラデーションは style.css 側で描く
+        if (color) el.style.setProperty('--tile-color', COLOR_HEX[color]);
+        else el.style.removeProperty('--tile-color');
       }
     }
   }
@@ -60,7 +62,7 @@ export class BoardView {
       const ghost = document.createElement('div');
       ghost.className = 'ghost';
       const color = colors[i];
-      if (color) ghost.style.background = COLOR_HEX[color];
+      if (color) ghost.style.setProperty('--tile-color', COLOR_HEX[color]);
       el.appendChild(ghost);
       ghost.addEventListener('animationend', () => ghost.remove());
     });
