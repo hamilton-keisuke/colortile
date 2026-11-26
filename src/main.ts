@@ -63,7 +63,8 @@ function startSolo(): void {
       onHumanClick: playClickSound,
     }),
   ];
-  panels[0].start();
+  const solo = panels[0];
+  runCountdown(3, () => solo.start());
 }
 
 function startVersus(): void {
