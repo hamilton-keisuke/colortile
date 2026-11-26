@@ -209,7 +209,8 @@ button {
 }
 
 .cell.tile,
-.ghost {
+.ghost,
+.title-tile {
   /* 上から下へ濃くなるグラデーション（--tile-color は BoardView.ts が設定） */
   background: linear-gradient(
     to bottom,
@@ -294,4 +295,81 @@ button {
 
 .result strong {
   font-size: 1.5rem;
+}
+
+/* ---------- タイトル画面 ---------- */
+.title-screen {
+  min-height: calc(100vh - 24px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 24px 16px;
+}
+
+.title-screen[hidden] {
+  display: none;
+}
+
+.title-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.title-tile {
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+.title-logo {
+  margin: 0;
+  font-size: clamp(2.4rem, 8vw, 4.5rem);
+  letter-spacing: 0.06em;
+}
+
+.title-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 32px;
+  background: #353a43;
+  border-radius: 12px;
+  min-width: min(320px, 100%);
+}
+
+.title-form .tabs button {
+  padding: 8px 18px;
+}
+
+.difficulty-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.difficulty-field:has(select:disabled) {
+  color: #888;
+}
+
+.play-button {
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 10px 56px;
+  border-radius: 8px;
+  background: #43a047;
+}
+
+.play-button:hover {
+  background: #4caf50;
 }

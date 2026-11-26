@@ -7,17 +7,33 @@
   </head>
   <body>
     <main>
-      <nav class="topbar">
-        <h1>カラータイル2</h1>
-        <div class="tabs">
-          <button data-mode="solo">ひとりで</button>
-          <button data-mode="versus">AIと対戦</button>
+      <!-- タイトル画面 -->
+      <section id="title-screen" class="title-screen">
+        <div id="title-tiles" class="title-tiles" aria-hidden="true"></div>
+        <h1 class="title-logo">カラータイル2</h1>
+        <div class="title-form">
+          <div class="tabs" role="group" aria-label="モード">
+            <button data-mode="solo">ひとりで</button>
+            <button data-mode="versus">AIと対戦</button>
+          </div>
+          <label class="difficulty-field">
+            AIの強さ
+            <select id="difficulty"></select>
+          </label>
+          <button id="play" class="play-button">Play</button>
         </div>
-        <label id="difficulty-wrap">AIの強さ <select id="difficulty"></select></label>
-        <button id="start">新しいゲーム</button>
-      </nav>
-      <div id="banner" class="banner" hidden></div>
-      <div id="panels"></div>
+      </section>
+
+      <!-- ゲーム画面 -->
+      <section id="game-screen" hidden>
+        <nav class="topbar">
+          <h1>カラータイル2</h1>
+          <button id="back-to-title">タイトルに戻る</button>
+        </nav>
+        <div id="banner" class="banner" hidden></div>
+        <div id="panels"></div>
+      </section>
+
       <div id="countdown" class="countdown" hidden></div>
     </main>
     <script type="module" src="/src/main.ts"></script>

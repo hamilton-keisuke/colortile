@@ -4,6 +4,8 @@ import { AIPlayer, GreedyAI, RandomAI } from './ai/AIPlayer';
 import { BoardGenerator, seededRandom } from './core/BoardGenerator';
 import { judgeMatch } from './core/match';
 import { ClickOutcome } from './core/Game';
+import { TILE_COLORS } from './core/types';
+import { COLOR_HEX } from './ui/BoardView';
 import { PlayerPanel } from './ui/PlayerPanel';
 import { SoundPlayer } from './ui/SoundPlayer';
 
@@ -22,11 +24,13 @@ const DIFFICULTIES: Record<string, Difficulty> = {
 };
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+const titleScreenEl = $('title-screen');
+const gameScreenEl = $('game-screen');
 const panelsEl = $('panels');
 const bannerEl = $('banner');
-const startBtn = $<HTMLButtonElement>('start');
+const playBtn = $<HTMLButtonElement>('play');
+const backBtn = $<HTMLButtonElement>('back-to-title');
 const difficultyEl = $<HTMLSelectElement>('difficulty');
-const difficultyWrap = $('difficulty-wrap');
 const modeButtons = document.querySelectorAll<HTMLButtonElement>('[data-mode]');
 
 let mode: Mode = 'versus';
@@ -141,17 +145,32 @@ function showMatchResult(): void {
   bannerEl.hidden = false;
 }
 
-function start(): void {
+/* ---------- 画面遷移 ---------- */
+
+function showTitle(): void {
+  clearMatch();
+  document.body.classList.remove('versus');
+  gameScreenEl.hidden = true;
+  titleScreenEl.hidden = false;
+}
+
+function play(): void {
+  titleScreenEl.hidden = true;
+  gameScreenEl.hidden = false;
+  document.body.classList.toggle('versus', mode === 'versus');
   if (mode === 'solo') startSolo();
   else startVersus();
 }
 
+/** タイトル画面のモード切替。ひとりでのときは AI の強さを選べない */
 function setMode(next: Mode): void {
   mode = next;
-  modeButtons.forEach((b) => b.classList.toggle('active', b.dataset.mode === mode));
-  difficultyWrap.hidden = mode !== 'versus';
-  document.body.classList.toggle('versus', mode === 'versus');
-  start();
+  modeButtons.forEach((b) => {
+    const active = b.dataset.mode === mode;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-pressed', String(active));
+  });
+  difficultyEl.disabled = mode === 'solo';
 }
 
 function loop(): void {
@@ -159,16 +178,29 @@ function loop(): void {
   requestAnimationFrame(loop);
 }
 
+/* ---------- 初期化 ---------- */
+
 for (const [key, d] of Object.entries(DIFFICULTIES)) {
   difficultyEl.add(new Option(d.label, key, false, key === 'normal'));
 }
+
+// タイトル画面の飾りタイル（全10色）
+const titleTilesEl = $('title-tiles');
+for (const color of TILE_COLORS) {
+  const tile = document.createElement('span');
+  tile.className = 'title-tile';
+  tile.style.setProperty('--tile-color', COLOR_HEX[color]);
+  titleTilesEl.appendChild(tile);
+}
+
 modeButtons.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode as Mode)));
-startBtn.addEventListener('click', start);
-difficultyEl.addEventListener('change', start);
-// ボタン（モード切替・新しいゲームなど）のクリック音
+playBtn.addEventListener('click', play);
+backBtn.addEventListener('click', showTitle);
+// ボタン（モード切替・Play・タイトルに戻る）のクリック音
 document.addEventListener('click', (e) => {
   if ((e.target as HTMLElement).closest('button')) sound.play('success');
 });
 
 setMode('versus');
+showTitle();
 loop();
